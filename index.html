@@ -1,0 +1,2529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Museum of Us: Chapter 17 Mahda 🏛️✨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --bg-void: #0d0a14;
+    --wall-dark: #1d152b;
+    --wall-trim: #35254d;
+    --floor-light: #f4ede2;
+    --floor-tile: #e8decb;
+    --carpet-red: #7a243b;
+    --carpet-border: #dfb468;
+    --gold: #dfb468;
+    --gold-bright: #fae0a8;
+    --rose: #d97398;
+    --ink: #2b1d26;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-void);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    user-select: none;
+}
+
+/* =========================================
+   LAYAR TIKET MASUK (WELCOME OVERLAY)
+   ========================================= */
+.ticket-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: radial-gradient(circle at center, rgba(36, 22, 54, 0.96), rgba(11, 8, 18, 0.99));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.ticket-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.04);
+}
+
+.museum-ticket {
+    max-width: 410px;
+    width: 100%;
+    background: linear-gradient(155deg, #281738 0%, #160c21 100%);
+    border: 2px solid rgba(223, 180, 104, 0.55);
+    border-radius: 24px;
+    padding: 28px 22px;
+    text-align: center;
+    color: #fdf8f2;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+    position: relative;
+}
+
+.ticket-tag {
+    display: inline-block;
+    font-size: 10.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    border: 1px solid rgba(223, 180, 104, 0.4);
+    background: rgba(223, 180, 104, 0.1);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+}
+
+.ticket-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff 20%, var(--gold-bright) 85%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+}
+
+.ticket-sub {
+    font-family: 'Caveat', cursive;
+    font-size: 1.65rem;
+    color: #f3a6c0;
+    margin-bottom: 14px;
+}
+
+.ticket-desc {
+    font-size: 13px;
+    color: rgba(253, 248, 242, 0.8);
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.ticket-info-box {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px dashed rgba(223, 180, 104, 0.35);
+    border-radius: 14px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--gold-bright);
+    margin-bottom: 20px;
+}
+
+.btn-enter {
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: #211029;
+    border: none;
+    padding: 13px 28px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(223, 180, 104, 0.35);
+    transition: transform 0.25s ease;
+}
+
+.btn-enter:hover {
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   HUD ATAS (PROGRESS, MUSIK & MINI-MAP)
+   ========================================= */
+.top-hud {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 900;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+    gap: 8px;
+}
+
+.hud-left-stack,
+.hud-right-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.hud-left-stack {
+    align-items: flex-start;
+}
+
+.hud-right-stack {
+    align-items: flex-end;
+}
+
+.hud-badge {
+    pointer-events: auto;
+    background: rgba(22, 12, 33, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(223, 180, 104, 0.45);
+    color: var(--gold-bright);
+    padding: 7px 13px;
+    border-radius: 24px;
+    font-size: 11.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.voucher-hud-pill {
+    display: none;
+    pointer-events: auto;
+    background: linear-gradient(135deg, #fae0a8, #dfb468);
+    color: #211029;
+    border: 1.5px solid #ffffff;
+    padding: 7px 13px;
+    border-radius: 24px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(223, 180, 104, 0.5);
+    animation: pulsePill 1.6s infinite alternate;
+}
+
+.voucher-hud-pill.visible {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+@keyframes pulsePill {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+}
+
+.music-btn {
+    cursor: pointer;
+}
+
+.disc-icon {
+    display: inline-block;
+    font-size: 14px;
+}
+
+.disc-icon.spin {
+    animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* MINI-MAP WIDGET */
+.minimap-card {
+    pointer-events: auto;
+    background: rgba(20, 11, 31, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(223, 180, 104, 0.5);
+    border-radius: 14px;
+    padding: 7px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55);
+    transition: all 0.25s ease;
+    width: 164px;
+}
+
+.minimap-card.collapsed {
+    width: auto;
+    padding: 6px 12px;
+    border-radius: 22px;
+}
+
+.minimap-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--gold-bright);
+    letter-spacing: 0.4px;
+}
+
+.minimap-card.collapsed .minimap-header {
+    margin-bottom: 0;
+}
+
+.minimap-toggle-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(223, 180, 104, 0.35);
+    color: var(--gold-bright);
+    border-radius: 8px;
+    padding: 1px 6px;
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.minimap-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.minimap-card.collapsed .minimap-body {
+    display: none;
+}
+
+#minimapCanvas {
+    width: 148px;
+    height: 122px;
+    border-radius: 8px;
+    border: 1px solid rgba(223, 180, 104, 0.35);
+    cursor: crosshair;
+    display: block;
+    background: #1a1226;
+}
+
+.minimap-legend {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 5px;
+    font-size: 9px;
+    color: rgba(253, 248, 242, 0.78);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.legend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* =========================================
+   VIEWPORT & DUNIA MUSEUM (CAMERA WORLD)
+   ========================================= */
+.viewport {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #120c1c;
+}
+
+.museum-world {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1360px;
+    height: 1120px;
+    background-color: var(--floor-light);
+    background-image:
+        linear-gradient(45deg, var(--floor-tile) 25%, transparent 25%),
+        linear-gradient(-45deg, var(--floor-tile) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, var(--floor-tile) 75%),
+        linear-gradient(-45deg, transparent 75%, var(--floor-tile) 75%);
+    background-size: 80px 80px;
+    background-position: 0 0, 0 40px, 40px -40px, -40px 0;
+    box-shadow: inset 0 0 90px rgba(43, 29, 38, 0.25);
+    will-change: transform;
+}
+
+/* DINDING ATAS & SAMPING MUSEUM */
+.wall-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 155px;
+    background: linear-gradient(180deg, #1b1129 0%, #2d1d42 88%, #dfb468 92%, #8a6428 100%);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    z-index: 2;
+}
+
+.wall-divider-left,
+.wall-divider-right {
+    position: absolute;
+    top: 470px;
+    width: 390px;
+    height: 135px;
+    background: linear-gradient(180deg, #1b1129 0%, #2d1d42 86%, #dfb468 91%, #8a6428 100%);
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    z-index: 4;
+}
+
+.wall-divider-left {
+    left: 0;
+    border-right: 4px solid #3c2856;
+}
+
+.wall-divider-right {
+    right: 0;
+    border-left: 4px solid #3c2856;
+}
+
+/* KARPET MERAH & EMAS MUSEUM */
+.carpet-main-vertical {
+    position: absolute;
+    top: 155px;
+    left: 615px;
+    width: 130px;
+    height: 920px;
+    background: var(--carpet-red);
+    border-left: 4px solid var(--carpet-border);
+    border-right: 4px solid var(--carpet-border);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.35);
+    z-index: 1;
+}
+
+.carpet-cross-horizontal {
+    position: absolute;
+    top: 335px;
+    left: 110px;
+    width: 1140px;
+    height: 96px;
+    background: var(--carpet-red);
+    border-top: 4px solid var(--carpet-border);
+    border-bottom: 4px solid var(--carpet-border);
+    z-index: 1;
+}
+
+.carpet-rotunda {
+    position: absolute;
+    top: 635px;
+    left: 530px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #912c47 0%, #6b1d32 80%);
+    border: 6px double var(--carpet-border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    z-index: 1;
+}
+
+/* BANNER NAMA MUSEUM DI DINDING UTAMA */
+.museum-banner {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #2a173b, #160c21);
+    border: 2px solid var(--gold);
+    border-radius: 14px;
+    padding: 8px 26px;
+    text-align: center;
+    color: var(--gold-bright);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    z-index: 5;
+}
+
+.museum-banner h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.45rem;
+    letter-spacing: 1px;
+}
+
+.museum-banner span {
+    font-size: 10.5px;
+    color: #f3a6c0;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* DEKORASI TANAMAN & TIANG */
+.plant-pot {
+    position: absolute;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #55a665, #285e36);
+    border: 3px solid #8c583a;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    z-index: 5;
+}
+
+.plant-pot::after {
+    content: '🌿';
+    position: absolute;
+    top: -10px;
+    left: 6px;
+    font-size: 24px;
+}
+
+/* =========================================
+   KARYA PAMERAN (EXHIBITS / FRAMES / PEDESTALS)
+   ========================================= */
+.exhibit {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 8;
+    transition: transform 0.25s ease;
+}
+
+.exhibit:hover {
+    transform: translate(-50%, -50%) scale(1.04);
+}
+
+/* Bingkai Foto di Dinding */
+.wall-frame {
+    width: 112px;
+    background: #ffffff;
+    padding: 6px 6px 18px;
+    border: 4px solid #c99a49;
+    border-radius: 6px;
+    box-shadow:
+        0 10px 22px rgba(0, 0, 0, 0.42),
+        0 0 0 2px #5e4214;
+    text-align: center;
+    position: relative;
+}
+
+.wall-frame::before {
+    content: '';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 46px;
+    height: 6px;
+    background: var(--gold-bright);
+    border-radius: 4px;
+    box-shadow: 0 6px 18px rgba(250, 224, 168, 0.85);
+}
+
+.wall-frame img {
+    width: 100%;
+    height: 82px;
+    object-fit: cover;
+    border-radius: 2px;
+    display: block;
+}
+
+.frame-plaque {
+    position: absolute;
+    bottom: 2px;
+    left: 4px;
+    right: 4px;
+    font-family: 'Caveat', cursive;
+    font-size: 13px;
+    color: #3b2314;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Layar Bioskop Mini untuk Video */
+.video-booth {
+    width: 122px;
+    background: #140e1f;
+    padding: 7px 7px 20px;
+    border: 3px solid var(--rose);
+    border-radius: 10px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    text-align: center;
+    position: relative;
+}
+
+.video-screen-preview {
+    width: 100%;
+    height: 76px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #3b1c47, #1b0e26);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-bright);
+    font-size: 24px;
+    border: 1px solid rgba(223, 180, 104, 0.35);
+}
+
+.video-booth .frame-plaque {
+    color: #f7d996;
+}
+
+/* Podium Khusus (Kue 3D, Surat Cinta, Wishing Fountain) */
+.pedestal-box {
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fffaf0, #e6d7be);
+    border: 4px solid var(--gold);
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8px;
+}
+
+.pedestal-icon {
+    font-size: 34px;
+    line-height: 1.1;
+    animation: floatIcon 2.4s infinite alternate ease-in-out;
+}
+
+@keyframes floatIcon {
+    from { transform: translateY(0); }
+    to { transform: translateY(-5px); }
+}
+
+.pedestal-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #2c1635;
+    margin-top: 4px;
+    line-height: 1.1;
+}
+
+/* =========================================
+   SPECIAL BOOTH VOUCHER (TENGAH MUSEUM)
+   ========================================= */
+.voucher-booth-exhibit {
+    display: none;
+    z-index: 10;
+}
+
+.voucher-booth-exhibit.unlocked {
+    display: block;
+    animation: boothAppear 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes boothAppear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+    }
+    70% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.voucher-booth-stand {
+    width: 138px;
+    background: linear-gradient(155deg, #2c1638 0%, #170b21 100%);
+    border: 3px solid var(--gold-bright);
+    border-radius: 16px;
+    padding: 10px 8px 12px;
+    text-align: center;
+    box-shadow:
+        0 0 0 4px rgba(223, 180, 104, 0.25),
+        0 14px 32px rgba(0, 0, 0, 0.55),
+        0 0 30px rgba(250, 224, 168, 0.65);
+    position: relative;
+}
+
+.voucher-awning {
+    background: repeating-linear-gradient(
+        90deg,
+        #b83b5e 0px,
+        #b83b5e 12px,
+        #fae0a8 12px,
+        #fae0a8 24px
+    );
+    height: 12px;
+    border-radius: 8px 8px 3px 3px;
+    margin-bottom: 6px;
+    border-bottom: 1.5px solid var(--gold);
+}
+
+.voucher-booth-icon {
+    font-size: 32px;
+    line-height: 1.1;
+    animation: floatIcon 1.8s infinite alternate ease-in-out;
+}
+
+.voucher-booth-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--gold-bright);
+    margin-top: 3px;
+}
+
+.voucher-booth-sub {
+    font-size: 10px;
+    color: #f3a6c0;
+    margin-top: 1px;
+}
+
+/* Highlight Saat Karakter Berada di Dekat Karya */
+.exhibit.nearby .wall-frame,
+.exhibit.nearby .video-booth,
+.exhibit.nearby .pedestal-box,
+.exhibit.nearby .voucher-booth-stand {
+    box-shadow:
+        0 0 0 4px var(--gold-bright),
+        0 0 28px rgba(250, 224, 168, 0.95);
+}
+
+.prompt-bubble {
+    position: absolute;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #241230;
+    color: var(--gold-bright);
+    border: 1px solid var(--gold);
+    padding: 3px 10px;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+
+.exhibit.nearby .prompt-bubble {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-3px);
+}
+
+.visited-check {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #25D366;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    z-index: 12;
+}
+
+.exhibit.visited .visited-check {
+    display: flex;
+}
+
+/* TAP RIPPLE DI LANTAI */
+.tap-marker {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2.5px solid var(--rose);
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 6;
+}
+
+.tap-marker.ping {
+    animation: floorPing 0.7s ease-out forwards;
+}
+
+@keyframes floorPing {
+    0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.3); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
+}
+
+/* =========================================
+   KARAKTER CHIBI MAHDA & MALIK (PLAYABLE)
+   ========================================= */
+.character-entity {
+    position: absolute;
+    width: 48px;
+    height: 64px;
+    transform: translate(-50%, -82%);
+    z-index: 20;
+    pointer-events: none;
+    will-change: left, top;
+}
+
+.companion-entity {
+    z-index: 19;
+}
+
+.char-name-tag {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(26, 12, 33, 0.85);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 10px;
+    border: 1px solid rgba(223, 180, 104, 0.45);
+    white-space: nowrap;
+}
+
+.char-shadow {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.32);
+}
+
+.char-sprite {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.character-entity.walking .char-sprite {
+    animation: chibiWalk 0.34s infinite alternate ease-in-out;
+}
+
+@keyframes chibiWalk {
+    0% { transform: translateY(0px) rotate(-3deg); }
+    100% { transform: translateY(-5px) rotate(3deg); }
+}
+
+/* Sprite Mahda (Hijab Cream + Sweater Pink) */
+.mahda-head {
+    width: 32px;
+    height: 32px;
+    border-radius: 50% 50% 46% 46%;
+    background: #efe3d3;
+    border: 2px solid #cbb9a2;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.mahda-face {
+    width: 22px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fbd5be;
+    position: relative;
+    margin-top: 3px;
+}
+
+.chibi-eyes {
+    position: absolute;
+    top: 7px;
+    left: 4px;
+    right: 4px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.chibi-eyes span {
+    width: 3.5px;
+    height: 4.5px;
+    border-radius: 50%;
+    background: #2b1a1f;
+}
+
+.chibi-blush {
+    position: absolute;
+    top: 11px;
+    left: 2px;
+    right: 2px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.chibi-blush span {
+    width: 4px;
+    height: 2.5px;
+    border-radius: 50%;
+    background: rgba(235, 105, 135, 0.65);
+}
+
+.mahda-body {
+    width: 28px;
+    height: 22px;
+    margin-top: -3px;
+    border-radius: 10px 10px 6px 6px;
+    background: linear-gradient(180deg, #f9d5e2 0%, #eca8c2 100%);
+    border: 1.5px solid #c97b99;
+    position: relative;
+    z-index: 2;
+}
+
+/* Sprite Malik (Rambut Hitam + Kemeja Kotak-Kotak) */
+.malik-head {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f5c6a8;
+    border: 2px solid #2b2229;
+    position: relative;
+    z-index: 3;
+}
+
+.malik-hair {
+    position: absolute;
+    top: -3px;
+    left: -2px;
+    right: -2px;
+    height: 15px;
+    border-radius: 16px 16px 6px 6px;
+    background: #1f1a21;
+}
+
+.malik-body {
+    width: 28px;
+    height: 23px;
+    margin-top: -2px;
+    border-radius: 8px 8px 5px 5px;
+    background-color: #d6dae0;
+    background-image:
+        linear-gradient(90deg, rgba(58, 66, 82, 0.55) 50%, transparent 50%),
+        linear-gradient(rgba(58, 66, 82, 0.55) 50%, transparent 50%);
+    background-size: 8px 8px;
+    border: 1.5px solid #3a4252;
+    z-index: 2;
+}
+
+.chibi-feet {
+    display: flex;
+    gap: 5px;
+    margin-top: -2px;
+    z-index: 1;
+}
+
+.chibi-feet span {
+    width: 8px;
+    height: 6px;
+    border-radius: 4px;
+    background: #2b1d26;
+}
+
+/* =========================================
+   KONTROL D-PAD & TOMBOL AKSI DI LAYAR
+   ========================================= */
+.controls-layer {
+    position: fixed;
+    bottom: 18px;
+    left: 16px;
+    right: 16px;
+    z-index: 950;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+}
+
+.dpad-grid {
+    pointer-events: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 46px);
+    grid-template-rows: repeat(3, 46px);
+    gap: 4px;
+}
+
+.dpad-btn {
+    background: rgba(24, 14, 36, 0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(223, 180, 104, 0.45);
+    color: var(--gold-bright);
+    border-radius: 14px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+    touch-action: none;
+}
+
+.dpad-btn:active,
+.dpad-btn.pressed {
+    background: rgba(223, 180, 104, 0.35);
+    transform: scale(0.93);
+}
+
+.dpad-up { grid-column: 2; grid-row: 1; }
+.dpad-left { grid-column: 1; grid-row: 2; }
+.dpad-center {
+    grid-column: 2;
+    grid-row: 2;
+    border-radius: 50%;
+    font-size: 12px;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.dpad-right { grid-column: 3; grid-row: 2; }
+.dpad-down { grid-column: 2; grid-row: 3; }
+
+.action-btn {
+    pointer-events: auto;
+    background: linear-gradient(135deg, #3c2654, #221333);
+    color: rgba(255, 255, 255, 0.65);
+    border: 1.5px solid rgba(223, 180, 104, 0.3);
+    padding: 13px 18px;
+    border-radius: 26px;
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    max-width: 195px;
+    text-align: center;
+}
+
+.action-btn.ready {
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: #211029;
+    border-color: #ffffff;
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 10px 26px rgba(223, 180, 104, 0.55);
+}
+
+/* =========================================
+   POP-UP SELAMAT (13/13 SELESAI)
+   ========================================= */
+.congrats-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2800;
+    background: rgba(11, 7, 18, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.congrats-overlay.open {
+    display: flex;
+    animation: modalPop 0.35s ease;
+}
+
+.congrats-card {
+    background: linear-gradient(155deg, #2b173d 0%, #170c22 100%);
+    color: #fdf8f2;
+    border: 2.5px solid var(--gold-bright);
+    border-radius: 24px;
+    max-width: 400px;
+    width: 100%;
+    padding: 26px 22px;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+}
+
+.congrats-trophy {
+    font-size: 46px;
+    margin-bottom: 8px;
+    animation: floatIcon 1.8s infinite alternate ease-in-out;
+}
+
+.congrats-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+    margin-bottom: 8px;
+    line-height: 1.15;
+}
+
+.congrats-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: rgba(253, 248, 242, 0.88);
+    margin-bottom: 18px;
+}
+
+.congrats-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-secondary-ghost {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--gold-bright);
+    border: 1px solid rgba(223, 180, 104, 0.4);
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* =========================================
+   MODAL DISPLAY KARYA MUSEUM & VOUCHER
+   ========================================= */
+.exhibit-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2500;
+    background: rgba(11, 7, 18, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+}
+
+.exhibit-modal.open {
+    display: flex;
+    animation: modalPop 0.3s ease;
+}
+
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-card {
+    background: #fcf8f2;
+    color: var(--ink);
+    border: 2.5px solid var(--gold);
+    border-radius: 22px;
+    max-width: 460px;
+    width: 100%;
+    max-height: 84vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #281738, #180d24);
+    color: var(--gold-bright);
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.35rem;
+}
+
+.modal-close-x {
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: var(--gold-bright);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 18px;
+    overflow-y: auto;
+    text-align: center;
+}
+
+.modal-body img,
+.modal-body video {
+    width: 100%;
+    max-height: 46vh;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #140e1f;
+    margin-bottom: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.modal-caption-title {
+    font-family: 'Caveat', cursive;
+    font-size: 1.65rem;
+    color: #b85679;
+    margin-bottom: 6px;
+}
+
+.modal-story {
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: #42303b;
+}
+
+.letter-scroll-box {
+    text-align: left;
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: #362530;
+}
+
+.letter-scroll-box p {
+    margin-bottom: 12px;
+}
+
+/* KARTU VOUCHER HADIAH VIP DI DALAM MODAL */
+.vip-voucher-ticket {
+    background: linear-gradient(145deg, #281538 0%, #150b21 100%);
+    border: 2px dashed var(--gold-bright);
+    border-radius: 18px;
+    padding: 18px 16px;
+    color: #fdf8f2;
+    position: relative;
+    margin: 6px 0 14px;
+    box-shadow: 0 12px 28px rgba(40, 21, 56, 0.35);
+    text-align: center;
+}
+
+.voucher-code-badge {
+    display: inline-block;
+    background: rgba(250, 224, 168, 0.14);
+    border: 1px solid var(--gold);
+    color: var(--gold-bright);
+    font-size: 10.5px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 14px;
+    margin-bottom: 8px;
+}
+
+.voucher-main-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--gold-bright);
+    line-height: 1.15;
+    margin-bottom: 4px;
+}
+
+.voucher-recipient {
+    font-family: 'Caveat', cursive;
+    font-size: 1.45rem;
+    color: #f3a6c0;
+    margin-bottom: 12px;
+}
+
+.voucher-perks-list {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: left;
+    font-size: 12.8px;
+    line-height: 1.75;
+    color: rgba(253, 248, 242, 0.92);
+    border: 1px solid rgba(223, 180, 104, 0.25);
+}
+
+.voucher-claimed-stamp {
+    display: none;
+    margin-top: 12px;
+    padding: 6px 14px;
+    border: 2px solid #25D366;
+    color: #7bf2a6;
+    background: rgba(37, 211, 102, 0.14);
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 12.5px;
+    letter-spacing: 1px;
+}
+
+.voucher-claimed-stamp.active {
+    display: inline-block;
+    animation: modalPop 0.3s ease;
+}
+
+.cake-modal-stage {
+    position: relative;
+    height: 195px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 10px 0 14px;
+    cursor: pointer;
+}
+
+.cake-3d-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: rotateX(12deg);
+}
+
+.flame-box {
+    width: 22px;
+    height: 34px;
+    position: relative;
+    margin-bottom: -2px;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.flame-box.out {
+    opacity: 0;
+    transform: scale(0);
+}
+
+.flame-shape {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 75%, #fff8d6 10%, #ffb703 55%, #fb8500 100%);
+    border-radius: 50% 50% 50% 50% / 68% 68% 32% 32%;
+    box-shadow: 0 0 18px #ffb703, 0 0 32px rgba(251, 133, 0, 0.75);
+    animation: flickerFlame 1s infinite alternate;
+}
+
+@keyframes flickerFlame {
+    0% { transform: scale(1) rotate(-3deg); }
+    100% { transform: scale(1.06, 0.94) rotate(3deg); }
+}
+
+.candle-stick {
+    width: 22px;
+    height: 60px;
+    background: repeating-linear-gradient(-28deg, #fff 0px, #fff 6px, #e57ba0 6px, #e57ba0 12px);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset -5px 0 8px rgba(0, 0, 0, 0.25);
+}
+
+.candle-stick span {
+    background: #281738;
+    color: var(--gold-bright);
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 1px 5px;
+    border-radius: 5px;
+    border: 1px solid var(--gold);
+}
+
+.tier-top {
+    width: 118px;
+    height: 32px;
+    background: linear-gradient(90deg, #d87a9e, #f8c8dc 40%, #b55479);
+    border-radius: 10px 10px 14px 14px;
+    margin-top: -2px;
+}
+
+.tier-bottom {
+    width: 158px;
+    height: 40px;
+    background: linear-gradient(90deg, #271330, #4b275c 40%, #1a0b21);
+    border-radius: 12px 12px 18px 18px;
+    border-bottom: 3px solid var(--gold);
+    margin-top: -4px;
+}
+
+.btn-primary-modal {
+    background: linear-gradient(135deg, #c96487, #9e3f62);
+    color: #ffffff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+}
+
+.wish-input-field {
+    width: 100%;
+    border: 1.5px solid rgba(184, 86, 121, 0.4);
+    border-radius: 12px;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    resize: none;
+    margin: 10px 0;
+}
+
+.wa-modal-btn {
+    display: inline-block;
+    background: #25D366;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 11px 22px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+</style>
+</head>
+<body>
+
+<!-- Audio Latar Belakang -->
+<audio id="bgMusic" loop>
+    <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<!-- LAYAR TIKET MASUK MUSEUM -->
+<div class="ticket-overlay" id="ticketOverlay">
+    <div class="museum-ticket">
+        <span class="ticket-tag">VIP Admission • Chapter 17</span>
+        <h1 class="ticket-title">Museum of Us</h1>
+        <div class="ticket-sub">Special Exhibition for Mahda Audriiya</div>
+        <p class="ticket-desc">
+            Selamat datang di galeri kecil yang menyimpan potongan cerita, foto, video, dan doa khusus di hari ulang tahunmu yang ke-17. Selesaikan semua 13 karya untuk membuka kejutan di tengah museum!
+        </p>
+        <div class="ticket-info-box" id="ticketDayCounter"></div>
+        <button class="btn-enter" onclick="enterMuseum()">Masuk ke Museum ✨</button>
+    </div>
+</div>
+
+<!-- HUD ATAS + MINI-MAP -->
+<div class="top-hud">
+    <div class="hud-left-stack">
+        <div class="hud-badge">
+            <span>🏛️ Koleksi:</span>
+            <span id="progressText">0 / 13</span>
+        </div>
+
+        <button class="voucher-hud-pill" id="voucherHudPill" onclick="goToVoucherBooth()">
+            🎁 Ke Booth Hadiah
+        </button>
+    </div>
+
+    <div class="hud-right-stack">
+        <button class="hud-badge music-btn" onclick="toggleMusic()">
+            <span class="disc-icon" id="discIcon">💿</span>
+            <span id="musicStatus">Play Music</span>
+        </button>
+
+        <!-- WIDGET MINI-MAP MUSEUM -->
+        <div class="minimap-card" id="minimapCard">
+            <div class="minimap-header">
+                <span>🗺️ Denah Museum</span>
+                <button class="minimap-toggle-btn" id="minimapToggleBtn" onclick="toggleMinimap()">Tutup</button>
+            </div>
+            <div class="minimap-body">
+                <canvas id="minimapCanvas" width="148" height="122" title="Tap titik di peta untuk jalan ke sana"></canvas>
+                <div class="minimap-legend">
+                    <span class="legend-item"><i class="legend-dot" style="background:#ff6b9d;"></i>Kamu</span>
+                    <span class="legend-item"><i class="legend-dot" style="background:#fae0a8;"></i>Karya</span>
+                    <span class="legend-item"><i class="legend-dot" style="background:#25D366;"></i>Sudah</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- VIEWPORT KAMERA MUSEUM -->
+<div class="viewport" id="viewport">
+    <div class="museum-world" id="museumWorld">
+
+        <!-- DINDING & DEKORASI -->
+        <div class="wall-top">
+            <div class="museum-banner">
+                <h1>MUSEUM OF US</h1>
+                <span>Sweet Seventeen Exhibition • Mahda &amp; Malik</span>
+            </div>
+        </div>
+
+        <div class="wall-divider-left"></div>
+        <div class="wall-divider-right"></div>
+
+        <!-- KARPET MERAH -->
+        <div class="carpet-main-vertical"></div>
+        <div class="carpet-cross-horizontal"></div>
+        <div class="carpet-rotunda"></div>
+
+        <!-- TANAMAN HIAS SUDUT -->
+        <div class="plant-pot" style="top: 175px; left: 40px;"></div>
+        <div class="plant-pot" style="top: 175px; right: 40px;"></div>
+        <div class="plant-pot" style="top: 625px; left: 40px;"></div>
+        <div class="plant-pot" style="top: 625px; right: 40px;"></div>
+        <div class="plant-pot" style="top: 1030px; left: 555px;"></div>
+        <div class="plant-pot" style="top: 1030px; left: 765px;"></div>
+
+        <!-- TAP RIPPLE -->
+        <div class="tap-marker" id="tapMarker"></div>
+
+        <!-- =========================================
+             13 KARYA PAMERAN UTAMA DI DALAM MUSEUM
+             ========================================= -->
+
+        <!-- 1. SURAT CINTA UTAMA (DINDING TENGAH ATAS) -->
+        <div class="exhibit" data-id="0" style="top: 215px; left: 680px;" onclick="inspectExhibit(0)">
+            <div class="prompt-bubble">✨ Baca Surat</div>
+            <div class="visited-check">✓</div>
+            <div class="pedestal-box">
+                <div class="pedestal-icon">💌</div>
+                <div class="pedestal-label">Surat Untuk Mahda</div>
+            </div>
+        </div>
+
+        <!-- 2. FOTO 1: AWAL-AWAL MAIN -->
+        <div class="exhibit" data-id="1" style="top: 165px; left: 210px;" onclick="inspectExhibit(1)">
+            <div class="prompt-bubble">✨ Lihat Foto</div>
+            <div class="visited-check">✓</div>
+            <div class="wall-frame">
+                <img src="IMG-20261023-WA0138.jpg" alt="Awal-awal main">
+                <div class="frame-plaque">Awal-awal main 🌙</div>
+            </div>
+        </div>
+
+        <!-- 3. FOTO 2: ONE OF OUR MOMENTS -->
+        <div class="exhibit" data-id="2" style="top: 165px; left: 420px;" onclick="inspectExhibit(2)">
+            <div class="prompt-bubble">✨ Lihat Foto</div>
+            <div class="visited-check">✓</div>
+            <div class="wall-frame">
+                <img src="IMG-20261101-WA0042.jpg" alt="One of our moments">
+                <div class="frame-plaque">Our moments 🎀</div>
+            </div>
+        </div>
+
+        <!-- 4. FOTO 3: LITTLE NIGHT MEMORY -->
+        <div class="exhibit" data-id="3" style="top: 165px; left: 940px;" onclick="inspectExhibit(3)">
+            <div class="prompt-bubble">✨ Lihat Foto</div>
+            <div class="visited-check">✓</div>
+            <div class="wall-frame">
+                <img src="IMG-20261101-WA0048.jpg" alt="Little night memory">
+                <div class="frame-plaque">Night memory ✨</div>
+            </div>
+        </div>
+
+        <!-- 5. FOTO 4: NIGHT MOMENT -->
+        <div class="exhibit" data-id="4" style="top: 165px; left: 1150px;" onclick="inspectExhibit(4)">
+            <div class="prompt-bubble">✨ Lihat Foto</div>
+            <div class="visited-check">✓</div>
+            <div class="wall-frame">
+                <img src="IMG_20261031_202439.jpg" alt="Night moment">
+                <div class="frame-plaque">Out at night 💫</div>
+            </div>
+        </div>
+
+        <!-- 6. FOTO 5: FAVORITE MOMENT (SAYAP KIRI) -->
+        <div class="exhibit" data-id="5" style="top: 380px; left: 140px;" onclick="inspectExhibit(5)">
+            <div class="prompt-bubble">✨ Lihat Foto</div>
+            <div class="visited-check">✓</div>
+            <div class="wall-frame">
+                <img src="IMG-20261101-WA0007.jpg" alt="Favorite moment">
+                <div class="frame-plaque">Favorite moment 🌷</div>
+            </div>
+        </div>
+
+        <!-- 7. FOTO 6: A MEMORY TO KEEP (SAYAP KANAN) -->
+        <div class="exhibit" data-id="6" style="top: 380px; left: 1220px;" onclick="inspectExhibit(6)">
+            <div class="prompt-bubble">✨ Lihat Foto</div>
+            <div class="visited-check">✓</div>
+            <div class="wall-frame">
+                <img src="IMG-20261028-WA0033.jpg" alt="A memory to keep">
+                <div class="frame-plaque">To keep 🤍</div>
+            </div>
+        </div>
+
+        <!-- 8. CENTERPIECE: KUE & LILIN ULANG TAHUN 3D -->
+        <div class="exhibit" data-id="7" style="top: 785px; left: 680px;" onclick="inspectExhibit(7)">
+            <div class="prompt-bubble">🎂 Tiup Lilin 17</div>
+            <div class="visited-check">✓</div>
+            <div class="pedestal-box" style="width: 132px; height: 132px; border-width: 5px;">
+                <div class="pedestal-icon">🎂</div>
+                <div class="pedestal-label">Sweet 17th Candle</div>
+            </div>
+        </div>
+
+        <!-- 9. LE MEMOIRS PHOTOBOOTH PHOTO STRIP (GALERI BAWAH KIRI) -->
+        <div class="exhibit" data-id="8" style="top: 635px; left: 130px;" onclick="inspectExhibit(8)">
+            <div class="prompt-bubble">📸 Photobooth</div>
+            <div class="visited-check">✓</div>
+            <div class="wall-frame">
+                <img src="IMG-20261121-WA0022.jpg" alt="Le Memoirs Strip">
+                <div class="frame-plaque">The Polka Dream 📸</div>
+            </div>
+        </div>
+
+        <!-- 10. VIDEO 1: LIVE STRIP MOMENTS -->
+        <div class="exhibit" data-id="9" style="top: 635px; left: 310px;" onclick="inspectExhibit(9)">
+            <div class="prompt-bubble">🎬 Putar Video</div>
+            <div class="visited-check">✓</div>
+            <div class="video-booth">
+                <div class="video-screen-preview">🎬</div>
+                <div class="frame-plaque">Live Strip Video</div>
+            </div>
+        </div>
+
+        <!-- 11. VIDEO 2: PHOTOBOOTH BOOMERANG -->
+        <div class="exhibit" data-id="10" style="top: 860px; left: 210px;" onclick="inspectExhibit(10)">
+            <div class="prompt-bubble">🎬 Putar Video</div>
+            <div class="visited-check">✓</div>
+            <div class="video-booth">
+                <div class="video-screen-preview">✌️</div>
+                <div class="frame-plaque">Booth Boomerang</div>
+            </div>
+        </div>
+
+        <!-- 12. VIDEO 3: GELANG COUPLE (GALERI BAWAH KANAN) -->
+        <div class="exhibit" data-id="11" style="top: 635px; left: 1090px;" onclick="inspectExhibit(11)">
+            <div class="prompt-bubble">🎬 Putar Video</div>
+            <div class="visited-check">✓</div>
+            <div class="video-booth">
+                <div class="video-screen-preview">🤍</div>
+                <div class="frame-plaque">Gelang Couple ✨</div>
+            </div>
+        </div>
+
+        <!-- 13. WISHING FOUNTAIN & WHATSAPP (GALERI BAWAH KANAN) -->
+        <div class="exhibit" data-id="12" style="top: 860px; left: 1120px;" onclick="inspectExhibit(12)">
+            <div class="prompt-bubble">🌟 Make a Wish</div>
+            <div class="visited-check">✓</div>
+            <div class="pedestal-box">
+                <div class="pedestal-icon">⛲</div>
+                <div class="pedestal-label">Wishing Fountain</div>
+            </div>
+        </div>
+
+        <!-- =========================================
+             BOOTH VOUCHER HADIAH (MUNCUL DI TENGAH SETELAH 13/13 SELESAI)
+             ========================================= -->
+        <div class="exhibit voucher-booth-exhibit" id="voucherBoothExhibit" data-id="13" style="top: 525px; left: 680px;" onclick="inspectExhibit(13)">
+            <div class="prompt-bubble">🎁 Klaim Voucher</div>
+            <div class="visited-check">✓</div>
+            <div class="voucher-booth-stand">
+                <div class="voucher-awning"></div>
+                <div class="voucher-booth-icon">🎟️</div>
+                <div class="voucher-booth-title">VIP Gift Booth</div>
+                <div class="voucher-booth-sub">Tap untuk klaim hadiah</div>
+            </div>
+        </div>
+
+        <!-- KARAKTER PENDAMPING: MALIK -->
+        <div class="character-entity companion-entity" id="malikChar">
+            <div class="char-name-tag">Malik</div>
+            <div class="char-shadow"></div>
+            <div class="char-sprite">
+                <div class="malik-head">
+                    <div class="malik-hair"></div>
+                    <div class="chibi-eyes"><span></span><span></span></div>
+                    <div class="chibi-blush"><span></span><span></span></div>
+                </div>
+                <div class="malik-body"></div>
+                <div class="chibi-feet"><span></span><span></span></div>
+            </div>
+        </div>
+
+        <!-- KARAKTER UTAMA: MAHDA -->
+        <div class="character-entity" id="mahdaChar">
+            <div class="char-name-tag" style="color: #fae0a8;">Mahda ✨</div>
+            <div class="char-shadow"></div>
+            <div class="char-sprite">
+                <div class="mahda-head">
+                    <div class="mahda-face">
+                        <div class="chibi-eyes"><span></span><span></span></div>
+                        <div class="chibi-blush"><span></span><span></span></div>
+                    </div>
+                </div>
+                <div class="mahda-body"></div>
+                <div class="chibi-feet"><span></span><span></span></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- KONTROL LAYAR SENTUH (D-PAD & TOMBOL INTERAKSI) -->
+<div class="controls-layer">
+    <div class="dpad-grid">
+        <button class="dpad-btn dpad-up" data-dir="up">▲</button>
+        <button class="dpad-btn dpad-left" data-dir="left">◀</button>
+        <div class="dpad-btn dpad-center">•</div>
+        <button class="dpad-btn dpad-right" data-dir="right">▶</button>
+        <button class="dpad-btn dpad-down" data-dir="down">▼</button>
+    </div>
+
+    <button class="action-btn" id="actionBtn" onclick="triggerNearbyAction()">
+        Jalan ke Karya ✨
+    </button>
+</div>
+
+<!-- POP-UP SELAMAT SETELAH MENYELESAIKAN 13 KARYA -->
+<div class="congrats-overlay" id="congratsOverlay">
+    <div class="congrats-card">
+        <div class="congrats-trophy">🏆🎟️✨</div>
+        <h2 class="congrats-title">Selamat! Semua 13 Karya Selesai!</h2>
+        <p class="congrats-desc">
+            Yeay! Kamu sudah melihat semua 13 koleksi kenangan di <strong>Museum of Us</strong>. Sebagai hadiah spesial ulang tahunmu yang ke-17, <strong>Booth Voucher Hadiah</strong> sekarang sudah muncul di <strong>tengah museum</strong>!
+        </p>
+        <div class="congrats-actions">
+            <button class="btn-enter" onclick="goToVoucherBooth()">Jalan ke Tengah Museum 🎁</button>
+            <button class="btn-secondary-ghost" onclick="closeCongratsPopup()">Tutup &amp; Jalan Sendiri</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DISPLAY KARYA MUSEUM & VOUCHER -->
+<div class="exhibit-modal" id="exhibitModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 id="modalHeaderTitle">Museum Exhibit</h3>
+            <button class="modal-close-x" onclick="closeExhibitModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBodyContent"></div>
+    </div>
+</div>
+
+<script>
+// 1. DATA 13 KARYA UTAMA MUSEUM
+const exhibitsData = [
+    {
+        id: 0,
+        title: "Surat Untuk Mahda 💌",
+        type: "letter",
+        x: 680,
+        y: 215,
+        marker: "💌"
+    },
+    {
+        id: 1,
+        title: "Koleksi #01 • Awal Kenal",
+        type: "photo",
+        x: 210,
+        y: 165,
+        src: "IMG-20261023-WA0138.jpg",
+        caption: "Awal-awal main 🌙",
+        story: "Momen awal-awal kita makin dekat. Waktu berlalu cepat banget ya, tapi memori ini bakal selalu jadi favoritku! 🌙"
+    },
+    {
+        id: 2,
+        title: "Koleksi #02 • Pramuka",
+        type: "photo",
+        x: 420,
+        y: 165,
+        src: "IMG-20261101-WA0042.jpg",
+        caption: "One of our moments 🎀",
+        story: "Momen Pramuka yang super seru! Dari sekian banyak acara, foto ini yang paling banyak senyum bahagianya. 🎀"
+    },
+    {
+        id: 3,
+        title: "Koleksi #03 • Night Event",
+        type: "photo",
+        x: 940,
+        y: 165,
+        src: "IMG-20261101-WA0048.jpg",
+        caption: "Little night memory ✨",
+        story: "Tampil heboh bareng dengan makeup ala karakter! Salah satu malam yang paling berkesan dan nggak bakal terlupakan. ✨"
+    },
+    {
+        id: 4,
+        title: "Koleksi #04 • Malam Santai",
+        type: "photo",
+        x: 1150,
+        y: 165,
+        src: "IMG_20261031_202439.jpg",
+        caption: "Night moment 💫",
+        story: "Foto malam-malam di luar. Walaupun sederhana, tapi momen ngobrol dan seru-seruannya selalu ngangenin. 💫"
+    },
+    {
+        id: 5,
+        title: "Koleksi #05 • Favorit",
+        type: "photo",
+        x: 140,
+        y: 380,
+        src: "IMG-20261101-WA0007.jpg",
+        caption: "Favorite moment 🌷",
+        story: "Satu lagi kenangan manis pas kegiatan bareng. Semoga bakal ada lebih banyak foto seru kayak gini ke depannya! 🌷"
+    },
+    {
+        id: 6,
+        title: "Koleksi #06 • Sore Hari",
+        type: "photo",
+        x: 1220,
+        y: 380,
+        src: "IMG-20261028-WA0033.jpg",
+        caption: "A memory to keep 🤍",
+        story: "Jalan-jalan sore yang santai. Potongan cerita kecil yang selalu ingin aku simpan baik-baik. 🤍"
+    },
+    {
+        id: 7,
+        title: "Centerpiece • Sweet 17th 🎂",
+        type: "candle",
+        x: 680,
+        y: 785,
+        marker: "🎂"
+    },
+    {
+        id: 8,
+        title: "Le Memoirs • Photo Strip",
+        type: "photo",
+        x: 130,
+        y: 635,
+        src: "IMG-20261121-WA0022.jpg",
+        caption: "The Polka Dream 📸",
+        story: "Sesi photobooth di Le Memoirs dengan tema The Polka Dream! Salah satu koleksi foto favorit kita yang wajib disimpan. 🤍✨"
+    },
+    {
+        id: 9,
+        title: "Le Memoirs • Live Strip",
+        type: "video",
+        x: 310,
+        y: 635,
+        src: "VID-20261121-WA0027.mp4",
+        caption: "Live Strip Moments 🎬",
+        story: "Rekaman detik-detik di balik tirai polkadot saat siap bergaya di depan kamera!"
+    },
+    {
+        id: 10,
+        title: "Le Memoirs • Boomerang",
+        type: "video",
+        x: 210,
+        y: 860,
+        src: "VID-20261121-WA0021.mp4",
+        caption: "Photobooth Boomerang ✌️🫶🤍",
+        story: "Klip gerakan lucu dari sesi photobooth kita yang selalu bikin tersenyum tiap diputar ulang."
+    },
+    {
+        id: 11,
+        title: "Cinema • Gelang Couple",
+        type: "video",
+        x: 1090,
+        y: 635,
+        src: "VID-20261030-WA0015.mp4",
+        caption: "Awal awal beli gelang couple 🤍✨",
+        story: "Momen kecil yang sederhana tapi punya arti besar buat aku."
+    },
+    {
+        id: 12,
+        title: "Air Mancur Harapan 🌟",
+        type: "wish",
+        x: 1120,
+        y: 860,
+        marker: "⛲"
+    }
+];
+
+// DATA BOOTH VOUCHER HADIAH (ID 13 — MUNCUL SETELAH 13 KARYA SELESAI)
+const voucherBoothData = {
+    id: 13,
+    title: "VIP Birthday Gift Voucher 🎟️",
+    caption: "Klaim Hadiah 🎁",
+    type: "voucher",
+    x: 680,
+    y: 525,
+    marker: "🎁"
+};
+
+// 2. KONTROL MUSIK
+const bgMusic = document.getElementById("bgMusic");
+const discIcon = document.getElementById("discIcon");
+const musicStatus = document.getElementById("musicStatus");
+let isMusicPlaying = false;
+
+function toggleMusic() {
+    if (isMusicPlaying) {
+        bgMusic.pause();
+        discIcon.classList.remove("spin");
+        musicStatus.textContent = "Play Music";
+        isMusicPlaying = false;
+    } else {
+        bgMusic.play().then(() => {
+            discIcon.classList.add("spin");
+            musicStatus.textContent = "Playing";
+            isMusicPlaying = true;
+        }).catch(() => {});
+    }
+}
+
+function enterMuseum() {
+    document.getElementById("ticketOverlay").classList.add("hidden");
+    if (!isMusicPlaying) {
+        bgMusic.play().then(() => {
+            isMusicPlaying = true;
+            discIcon.classList.add("spin");
+            musicStatus.textContent = "Playing";
+        }).catch(() => {});
+    }
+}
+
+// 3. ENGINE GERAK KARAKTER, KAMERA & MINI-MAP MUSEUM
+const WORLD_W = 1360;
+const WORLD_H = 1120;
+const TOTAL_MAIN_EXHIBITS = exhibitsData.length; // 13 karya
+const museumWorld = document.getElementById("museumWorld");
+const mahdaEl = document.getElementById("mahdaChar");
+const malikEl = document.getElementById("malikChar");
+const actionBtn = document.getElementById("actionBtn");
+const tapMarker = document.getElementById("tapMarker");
+
+// Elemen Mini-Map
+const minimapCard = document.getElementById("minimapCard");
+const minimapToggleBtn = document.getElementById("minimapToggleBtn");
+const minimapCanvas = document.getElementById("minimapCanvas");
+const mmCtx = minimapCanvas.getContext("2d");
+let isMinimapCollapsed = false;
+
+function toggleMinimap() {
+    isMinimapCollapsed = !isMinimapCollapsed;
+    minimapCard.classList.toggle("collapsed", isMinimapCollapsed);
+    minimapToggleBtn.textContent = isMinimapCollapsed ? "Buka" : "Tutup";
+}
+
+// Posisi awal di pintu masuk karpet merah bawah
+let playerX = 680;
+let playerY = 980;
+let targetX = null;
+let targetY = null;
+
+// Jejak langkah agar Malik mengikuti di belakang Mahda
+const pathHistory = [];
+for (let i = 0; i < 18; i++) {
+    pathHistory.push({ x: playerX - 24, y: playerY + 14 });
+}
+
+const keysHeld = {
+    up: false,
+    down: false,
+    left: false,
+    right: false
+};
+
+const exhibitElements = Array.from(document.querySelectorAll(".exhibit"));
+const visitedMainExhibits = new Set();
+let nearestExhibitId = null;
+let isModalOpen = false;
+let candleBlown = false;
+
+// Status Voucher Booth
+let isVoucherUnlocked = false;
+let hasShownCongrats = false;
+let isVoucherClaimed = false;
+
+/**
+ * @param {number} nx
+ * @param {number} ny
+ */
+function canWalkTo(nx, ny) {
+    if (nx < 48 || nx > WORLD_W - 48 || ny < 165 || ny > WORLD_H - 35) {
+        return false;
+    }
+    // Dinding pembatas sayap kiri (x: 0..390, y: 470..605)
+    if (nx < 405 && ny > 460 && ny < 615) {
+        return false;
+    }
+    // Dinding pembatas sayap kanan (x: 970..1360, y: 470..605)
+    if (nx > 955 && ny > 460 && ny < 615) {
+        return false;
+    }
+    return true;
+}
+
+// Tap pada Mini-Map untuk berjalan otomatis ke lokasi tersebut
+minimapCanvas.addEventListener("click", (e) => {
+    if (isModalOpen) return;
+    const rect = minimapCanvas.getBoundingClientRect();
+    const scaleX = WORLD_W / rect.width;
+    const scaleY = WORLD_H / rect.height;
+
+    const mapX = (e.clientX - rect.left) * scaleX;
+    const mapY = (e.clientY - rect.top) * scaleY;
+
+    let destX = Math.max(55, Math.min(WORLD_W - 55, mapX));
+    let destY = Math.max(175, Math.min(WORLD_H - 40, mapY));
+
+    if (destX < 405 && destY > 460 && destY < 615) {
+        destY = 630;
+    } else if (destX > 955 && destY > 460 && destY < 615) {
+        destY = 630;
+    }
+
+    targetX = destX;
+    targetY = destY;
+
+    tapMarker.style.left = targetX + "px";
+    tapMarker.style.top = targetY + "px";
+    tapMarker.classList.remove("ping");
+    void tapMarker.offsetWidth;
+    tapMarker.classList.add("ping");
+});
+
+/**
+ * Gambar denah mini-map museum secara real-time
+ * @param {number} camX
+ * @param {number} camY
+ */
+function renderMinimap(camX, camY) {
+    if (!mmCtx || isMinimapCollapsed) return;
+
+    const mw = minimapCanvas.width;
+    const mh = minimapCanvas.height;
+    const sx = mw / WORLD_W;
+    const sy = mh / WORLD_H;
+
+    mmCtx.clearRect(0, 0, mw, mh);
+
+    // 1. Lantai dasar museum
+    mmCtx.fillStyle = "#e8decb";
+    mmCtx.fillRect(0, 0, mw, mh);
+
+    // 2. Karpet merah
+    mmCtx.fillStyle = "#8a2943";
+    mmCtx.fillRect(615 * sx, 155 * sy, 130 * sx, 920 * sy);
+    mmCtx.fillRect(110 * sx, 335 * sy, 1140 * sx, 96 * sy);
+
+    mmCtx.beginPath();
+    mmCtx.arc(680 * sx, 785 * sy, 150 * sx, 0, Math.PI * 2);
+    mmCtx.fill();
+    mmCtx.strokeStyle = "#dfb468";
+    mmCtx.lineWidth = 1;
+    mmCtx.stroke();
+
+    // 3. Dinding utama & dinding pembatas
+    mmCtx.fillStyle = "#241734";
+    mmCtx.fillRect(0, 0, mw, 155 * sy);
+    mmCtx.fillRect(0, 470 * sy, 390 * sx, 135 * sy);
+    mmCtx.fillRect(970 * sx, 470 * sy, 390 * sx, 135 * sy);
+
+    mmCtx.fillStyle = "#dfb468";
+    mmCtx.fillRect(0, 150 * sy, mw, 2);
+
+    // 4. Garis rute tujuan jika karakter sedang menuju titik tap
+    if (targetX !== null && targetY !== null) {
+        mmCtx.save();
+        mmCtx.setLineDash([3, 3]);
+        mmCtx.strokeStyle = "rgba(217, 115, 152, 0.9)";
+        mmCtx.lineWidth = 1.2;
+        mmCtx.beginPath();
+        mmCtx.moveTo(playerX * sx, playerY * sy);
+        mmCtx.lineTo(targetX * sx, targetY * sy);
+        mmCtx.stroke();
+        mmCtx.restore();
+
+        mmCtx.fillStyle = "#d97398";
+        mmCtx.beginPath();
+        mmCtx.arc(targetX * sx, targetY * sy, 2.5, 0, Math.PI * 2);
+        mmCtx.fill();
+    }
+
+    // 5. Titik semua 13 karya utama
+    exhibitsData.forEach(item => {
+        const ex = item.x * sx;
+        const ey = item.y * sy;
+        const isVisited = visitedMainExhibits.has(item.id);
+        const isNear = item.id === nearestExhibitId;
+
+        mmCtx.beginPath();
+        mmCtx.arc(ex, ey, isNear ? 4.3 : 3.1, 0, Math.PI * 2);
+        mmCtx.fillStyle = isVisited ? "#25D366" : "#fae0a8";
+        mmCtx.fill();
+        mmCtx.strokeStyle = isNear ? "#ffffff" : "#241230";
+        mmCtx.lineWidth = isNear ? 1.4 : 0.9;
+        mmCtx.stroke();
+
+        if (item.marker) {
+            mmCtx.font = "8px sans-serif";
+            mmCtx.textAlign = "center";
+            mmCtx.fillText(item.marker, ex, ey - 4.5);
+        }
+    });
+
+    // 6. Penanda Voucher Booth di tengah museum jika sudah terbuka
+    if (isVoucherUnlocked) {
+        const vx = voucherBoothData.x * sx;
+        const vy = voucherBoothData.y * sy;
+        const glowRadius = 6 + Math.sin(Date.now() / 160) * 2.2;
+
+        mmCtx.beginPath();
+        mmCtx.arc(vx, vy, glowRadius, 0, Math.PI * 2);
+        mmCtx.fillStyle = "rgba(250, 224, 168, 0.45)";
+        mmCtx.fill();
+
+        mmCtx.font = "11px sans-serif";
+        mmCtx.textAlign = "center";
+        mmCtx.fillText("🎁", vx, vy + 3.5);
+    }
+
+    // 7. Kotak area kamera saat ini
+    const viewX = Math.max(0, -camX * sx);
+    const viewY = Math.max(0, -camY * sy);
+    const viewW = Math.min(mw - viewX, window.innerWidth * sx);
+    const viewH = Math.min(mh - viewY, window.innerHeight * sy);
+
+    mmCtx.strokeStyle = "rgba(255, 255, 255, 0.65)";
+    mmCtx.lineWidth = 1;
+    mmCtx.strokeRect(viewX, viewY, viewW, viewH);
+
+    // 8. Posisi Malik
+    const followPos = pathHistory[Math.min(14, pathHistory.length - 1)];
+    mmCtx.beginPath();
+    mmCtx.arc((followPos.x - 16) * sx, (followPos.y + 8) * sy, 2.6, 0, Math.PI * 2);
+    mmCtx.fillStyle = "#6fa8dc";
+    mmCtx.fill();
+
+    // 9. Posisi Mahda
+    const pulse = 4.5 + Math.sin(Date.now() / 180) * 1.6;
+    mmCtx.beginPath();
+    mmCtx.arc(playerX * sx, playerY * sy, pulse, 0, Math.PI * 2);
+    mmCtx.fillStyle = "rgba(255, 107, 157, 0.35)";
+    mmCtx.fill();
+
+    mmCtx.beginPath();
+    mmCtx.arc(playerX * sx, playerY * sy, 3.5, 0, Math.PI * 2);
+    mmCtx.fillStyle = "#ff4f8b";
+    mmCtx.fill();
+    mmCtx.strokeStyle = "#ffffff";
+    mmCtx.lineWidth = 1.2;
+    mmCtx.stroke();
+}
+
+// Kontrol D-Pad Layar Sentuh
+document.querySelectorAll(".dpad-btn[data-dir]").forEach(btn => {
+    const dir = btn.getAttribute("data-dir");
+    if (!dir) return;
+
+    const startPress = (e) => {
+        e.preventDefault();
+        targetX = null;
+        targetY = null;
+        keysHeld[dir] = true;
+        btn.classList.add("pressed");
+    };
+
+    const endPress = (e) => {
+        e.preventDefault();
+        keysHeld[dir] = false;
+        btn.classList.remove("pressed");
+    };
+
+    btn.addEventListener("touchstart", startPress, { passive: false });
+    btn.addEventListener("touchend", endPress, { passive: false });
+    btn.addEventListener("mousedown", startPress);
+    btn.addEventListener("mouseup", endPress);
+    btn.addEventListener("mouseleave", endPress);
+});
+
+// Kontrol Keyboard
+window.addEventListener("keydown", (e) => {
+    if (isModalOpen) {
+        if (e.key === "Escape") closeExhibitModal();
+        return;
+    }
+    const k = e.key.toLowerCase();
+    if (k === "arrowup" || k === "w") { keysHeld.up = true; targetX = null; }
+    if (k === "arrowdown" || k === "s") { keysHeld.down = true; targetX = null; }
+    if (k === "arrowleft" || k === "a") { keysHeld.left = true; targetX = null; }
+    if (k === "arrowright" || k === "d") { keysHeld.right = true; targetX = null; }
+    if ((e.key === " " || e.key === "Enter") && nearestExhibitId !== null) {
+        e.preventDefault();
+        inspectExhibit(nearestExhibitId);
+    }
+});
+
+window.addEventListener("keyup", (e) => {
+    const k = e.key.toLowerCase();
+    if (k === "arrowup" || k === "w") keysHeld.up = false;
+    if (k === "arrowdown" || k === "s") keysHeld.down = false;
+    if (k === "arrowleft" || k === "a") keysHeld.left = false;
+    if (k === "arrowright" || k === "d") keysHeld.right = false;
+});
+
+// Kontrol Tap-to-Walk di Lantai Museum
+museumWorld.addEventListener("click", (e) => {
+    if (isModalOpen) return;
+    const targetEl = e.target;
+    if (targetEl instanceof HTMLElement && targetEl.closest(".exhibit")) {
+        return;
+    }
+
+    const rect = museumWorld.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    targetX = Math.max(55, Math.min(WORLD_W - 55, clickX));
+    targetY = Math.max(175, Math.min(WORLD_H - 40, clickY));
+
+    tapMarker.style.left = targetX + "px";
+    tapMarker.style.top = targetY + "px";
+    tapMarker.classList.remove("ping");
+    void tapMarker.offsetWidth;
+    tapMarker.classList.add("ping");
+});
+
+function updateLoop() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let camX = vw / 2 - playerX;
+    let camY = vh / 2 - playerY;
+
+    if (vw < WORLD_W) {
+        camX = Math.min(0, Math.max(vw - WORLD_W, camX));
+    } else {
+        camX = (vw - WORLD_W) / 2;
+    }
+
+    if (vh < WORLD_H) {
+        camY = Math.min(0, Math.max(vh - WORLD_H, camY));
+    } else {
+        camY = (vh - WORLD_H) / 2;
+    }
+
+    if (!isModalOpen) {
+        const speed = 4.2;
+        let dx = 0;
+        let dy = 0;
+
+        if (keysHeld.up) dy -= speed;
+        if (keysHeld.down) dy += speed;
+        if (keysHeld.left) dx -= speed;
+        if (keysHeld.right) dx += speed;
+
+        if (dx === 0 && dy === 0 && targetX !== null && targetY !== null) {
+            const distX = targetX - playerX;
+            const distY = targetY - playerY;
+            const dist = Math.hypot(distX, distY);
+
+            if (dist > 6) {
+                dx = (distX / dist) * speed;
+                dy = (distY / dist) * speed;
+            } else {
+                targetX = null;
+                targetY = null;
+            }
+        }
+
+        const isMoving = Math.hypot(dx, dy) > 0.2;
+
+        if (isMoving) {
+            if (canWalkTo(playerX + dx, playerY)) playerX += dx;
+            if (canWalkTo(playerX, playerY + dy)) playerY += dy;
+
+            pathHistory.unshift({ x: playerX, y: playerY });
+            if (pathHistory.length > 22) pathHistory.pop();
+
+            mahdaEl.classList.add("walking");
+            malikEl.classList.add("walking");
+        } else {
+            mahdaEl.classList.remove("walking");
+            malikEl.classList.remove("walking");
+        }
+
+        mahdaEl.style.left = playerX + "px";
+        mahdaEl.style.top = playerY + "px";
+
+        const followPos = pathHistory[Math.min(14, pathHistory.length - 1)];
+        malikEl.style.left = (followPos.x - 16) + "px";
+        malikEl.style.top = (followPos.y + 8) + "px";
+
+        museumWorld.style.transform = `translate3d(${camX}px, ${camY}px, 0)`;
+
+        // Deteksi karya terdekat (termasuk Voucher Booth jika sudah terbuka)
+        let closestId = null;
+        let closestDist = 115;
+
+        exhibitElements.forEach(el => {
+            const id = Number(el.getAttribute("data-id"));
+            if (id === 13 && !isVoucherUnlocked) return;
+
+            const exX = parseFloat(el.style.left);
+            const exY = parseFloat(el.style.top);
+            const d = Math.hypot(playerX - exX, playerY - exY);
+
+            if (d < closestDist) {
+                closestDist = d;
+                closestId = id;
+            }
+        });
+
+        nearestExhibitId = closestId;
+
+        exhibitElements.forEach(el => {
+            const id = Number(el.getAttribute("data-id"));
+            el.classList.toggle("nearby", id === nearestExhibitId);
+        });
+
+        if (nearestExhibitId !== null) {
+            const item = nearestExhibitId === 13 ? voucherBoothData : exhibitsData[nearestExhibitId];
+            actionBtn.classList.add("ready");
+            actionBtn.textContent = `Lihat: ${item.caption || item.title} ✨`;
+        } else {
+            actionBtn.classList.remove("ready");
+            actionBtn.textContent = "Jalan ke Karya ✨";
+        }
+    }
+
+    renderMinimap(camX, camY);
+    requestAnimationFrame(updateLoop);
+}
+requestAnimationFrame(updateLoop);
+
+// 4. INTERAKSI & MODAL KARYA MUSEUM + BOOTH VOUCHER
+function triggerNearbyAction() {
+    if (nearestExhibitId !== null) {
+        inspectExhibit(nearestExhibitId);
+    }
+}
+
+function unlockVoucherBooth() {
+    if (isVoucherUnlocked) return;
+    isVoucherUnlocked = true;
+
+    const boothEl = document.getElementById("voucherBoothExhibit");
+    const hudPill = document.getElementById("voucherHudPill");
+    if (boothEl) boothEl.classList.add("unlocked");
+    if (hudPill) hudPill.classList.add("visible");
+}
+
+function showCongratsPopup() {
+    document.getElementById("congratsOverlay").classList.add("open");
+    confetti({
+        particleCount: 120,
+        spread: 85,
+        origin: { y: 0.55 },
+        colors: ["#fae0a8", "#e57ba0", "#ffffff", "#dfb468"]
+    });
+}
+
+function closeCongratsPopup() {
+    document.getElementById("congratsOverlay").classList.remove("open");
+}
+
+function goToVoucherBooth() {
+    closeCongratsPopup();
+    // Arahkan karakter Mahda berjalan otomatis ke depan Booth Voucher di tengah museum
+    targetX = 680;
+    targetY = 580;
+    tapMarker.style.left = targetX + "px";
+    tapMarker.style.top = targetY + "px";
+    tapMarker.classList.remove("ping");
+    void tapMarker.offsetWidth;
+    tapMarker.classList.add("ping");
+}
+
+/**
+ * @param {number} id
+ */
+function inspectExhibit(id) {
+    if (id === 13 && !isVoucherUnlocked) return;
+
+    const item = id === 13 ? voucherBoothData : exhibitsData[id];
+    if (!item) return;
+
+    const exEl = document.querySelector(`.exhibit[data-id="${id}"]`);
+    if (exEl) exEl.classList.add("visited");
+
+    // Catat progres 13 karya utama
+    if (id < TOTAL_MAIN_EXHIBITS) {
+        visitedMainExhibits.add(id);
+        document.getElementById("progressText").textContent = `${visitedMainExhibits.size} / ${TOTAL_MAIN_EXHIBITS}`;
+
+        if (visitedMainExhibits.size === TOTAL_MAIN_EXHIBITS) {
+            unlockVoucherBooth();
+        }
+    }
+
+    const modal = document.getElementById("exhibitModal");
+    const headerTitle = document.getElementById("modalHeaderTitle");
+    const bodyContent = document.getElementById("modalBodyContent");
+
+    headerTitle.textContent = item.title;
+    isModalOpen = true;
+    keysHeld.up = keysHeld.down = keysHeld.left = keysHeld.right = false;
+
+    if (item.type === "photo") {
+        bodyContent.innerHTML = `
+            <img src="${item.src}" alt="${item.caption}">
+            <div class="modal-caption-title">${item.caption}</div>
+            <p class="modal-story">${item.story}</p>
+        `;
+    } else if (item.type === "video") {
+        bodyContent.innerHTML = `
+            <video controls autoplay loop playsinline>
+                <source src="${item.src}" type="video/mp4">
+            </video>
+            <div class="modal-caption-title">${item.caption}</div>
+            <p class="modal-story">${item.story}</p>
+        `;
+    } else if (item.type === "letter") {
+        bodyContent.innerHTML = `
+            <div class="letter-scroll-box">
+                <p style="font-family: 'Cormorant Garamond', serif; font-size: 1.25rem; font-weight: 700; color: #b85679;">
+                    Happy Sweet Seventeen, Sayangg. 🤍
+                </p>
+                <p>Tujuh belas tahun yang lalu, seseorang yang begitu istimewa hadir ke dunia ini. Dan hari ini, di hari ulang tahunmu yang ke-17, aku merasa sangat beruntung dan bersyukur bisa ada di sini, merayakan momen spesial ini bersamamu.</p>
+                <p>Mahda, di hari yang membahagiakan ini, ada banyak hal yang ingin aku sampaikan dari hati yang paling dalam. Pertama-tama, aku mau mengakui dan meminta maaf atas kesalahanku di masa lalu. Aku sadar betul bahwa aku pernah mengambil keputusan yang salah, aku pernah kebingungan, dan tindakan burukku saat itu telah menggores luka yang mendalam di hatimu.</p>
+                <p>Aku tahu alasan kenapa sampai hari ini kamu masih sering merasa ragu, kenapa rasa sakit itu sesekali muncul kembali, dan kenapa kepercayaanmu ke aku belum bisa pulih 100%. Semua itu sepenuhnya adalah kesalahanku. Kamu berhak merasa kecewa, dan kamu sama sekali tidak salah karena belum bisa percaya sepenuhnya padaku saat ini.</p>
+                <p>Tapi di saat yang sama, aku sangat-sangat berterima kasih padamu, Mahda. Terima kasih sudah mau melapangkan dada, bersabar dengan segala kekuranganku, dan masih memberi aku kesempatan kedua untuk tetap berdiri di sampingmu. Kesempatan ini adalah hal yang sangat berharga buat aku, dan aku tidak akan menyia-nyiakannya lagi.</p>
+                <p>Di usiamu yang ke-17 ini, aku berjanji tidak hanya lewat kata-kata, tapi lewat tindakan nyata. Aku akan pelan-pelan membuktikan kepadamu bahwa aku serius, bahwa aku telah belajar dari kesalahanku, dan bahwa kepercayaan yang kamu berikan layak untuk aku jaga baik-baik.</p>
+                <p>Semoga di usia yang baru ini, setiap langkahmu selalu membawa kebahagiaan, setiap impian besar yang kamu cita-citakan menemukan jalannya, dan setiap harimu dipenuhi oleh hal-hal indah yang memang sangat pantas kamu dapatkan. Teruslah tumbuh menjadi Mahda yang penuh mimpi, penuh keberanian, dan tetap punya hati yang luar biasa hangat.</p>
+                <p>Kalau suatu saat nanti dunia terasa berat atau melelahkan, selalu ingat ya... kamu nggak pernah harus menghadapi semuanya sendirian. Terima kasih sudah hadir dan mewarnai hidupku. Semoga aku bisa terus menjadi bagian dari cerita-cerita indahmu selanjutnya.</p>
+                <p style="font-family: 'Caveat', cursive; font-size: 1.65rem; color: #b85679; text-align: right; margin-top: 12px;">
+                    With all my love &amp; sincerity,<br>Malik 🤍
+                </p>
+            </div>
+        `;
+    } else if (item.type === "candle") {
+        bodyContent.innerHTML = `
+            <p class="modal-story">Pejamkan mata sejenak, ucapkan harapan terbaikmu di usia 17 tahun, lalu tap kue di bawah untuk meniup lilinnya:</p>
+            <div class="cake-modal-stage" onclick="blowMuseumCandle()">
+                <div class="cake-3d-wrap">
+                    <div class="flame-box ${candleBlown ? "out" : ""}" id="modalFlame">
+                        <div class="flame-shape"></div>
+                    </div>
+                    <div class="candle-stick"><span>17</span></div>
+                    <div class="tier-top"></div>
+                    <div class="tier-bottom"></div>
+                </div>
+            </div>
+            <button class="btn-primary-modal" id="modalBlowBtn" onclick="blowMuseumCandle()">
+                ${candleBlown ? "Lilin Sudah Ditiup 🎉" : "Tiup Lilin 17 ✨"}
+            </button>
+            <p id="modalCandleMsg" style="display: ${candleBlown ? "block" : "none"}; margin-top: 12px; font-weight: 600; color: #b85679; font-size: 13.5px;">
+                Happy 17th Birthday, Sayangg! Semoga semua doamu terwujud 🤍✨
+            </p>
+        `;
+    } else if (item.type === "wish") {
+        bodyContent.innerHTML = `
+            <div class="modal-caption-title">Make a Wish ⛲✨</div>
+            <p class="modal-story">Tuliskan impian atau harapan terbesarmu di usia 17 tahun ini untuk dilepaskan di Air Mancur Harapan:</p>
+            <textarea class="wish-input-field" id="fountainWishInput" rows="3" placeholder="Ketik harapanmu di sini..."></textarea>
+            <button class="btn-primary-modal" onclick="sendFountainWish()">Kirim Harapan 🌟</button>
+            <p id="fountainWishMsg" style="display: none; margin-top: 10px; color: #b85679; font-weight: 600; font-size: 13px;">
+                Semoga semua impianmu terkabul ya, Sayangg! 🤍✨
+                </div>
+        `;
+    } else if (item.type === "voucher") {
+        bodyContent.innerHTML = `
+            <div class="vip-voucher-ticket">
+                <span class="voucher-code-badge">KODE: MAHDA-17-VIP</span>
+                <div class="voucher-main-heading">Sweet Seventeen Gift Voucher</div>
+                <div class="voucher-recipient">Special for Mahda Audriiya Al Farhanny 🤍</div>
+                <div class="voucher-perks-list">
+                    <div>🍽️ <strong>1x Traktiran Makan / Jajan Favorit</strong> (Bebas pilih!)</div>
+                    <div>📸 <strong>1x Jalan Bareng &amp; Photobooth Session</strong></div>
+                    <div>🌟 <strong>1x Permintaan Spesial</strong> (Apa aja yang bikin kamu seneng!)</div>
+                </div>
+                <div class="voucher-claimed-stamp ${isVoucherClaimed ? "active" : ""}" id="voucherClaimedStamp">
+                    ✓ VOUCHER BERHASIL DIKLAIM
+                </div>
+            </div>
+            <p class="modal-story" style="font-size: 12.5px;">
+                Tunjukkan atau kirim voucher ini ke Malik kapan pun kamu siap menukarkannya!
+            </p>
+            <button class="btn-primary-modal" id="claimVoucherBtn" onclick="claimGiftVoucher()">
+                ${isVoucherClaimed ? "Voucher Sudah Diklaim 🎉" : "Klaim Voucher Sekarang 🎟️✨"}
+            </button>
+            <div style="margin-top: 8px;">
+                <a href="https://wa.me/6283178574563?text=Kak%2C%20aku%20udah%20nyelesain%20semua%2013%20karya%20di%20Museum%20of%20Us%20dan%20baru%20aja%20klaim%20VIP%20Gift%20Voucher%20(MAHDA-17-VIP)%21%20%F0%9F%8E%9F%EF%B8%8F%F0%9F%8E%81%F0%9F%A4%8D" target="_blank" class="wa-modal-btn">
+                    Tukar Voucher via WhatsApp 💬
+                </a>
+            </div>
+        `;
+    }
+
+    modal.classList.add("open");
+}
+
+function claimGiftVoucher() {
+    isVoucherClaimed = true;
+    const stamp = document.getElementById("voucherClaimedStamp");
+    const btn = document.getElementById("claimVoucherBtn");
+    if (stamp) stamp.classList.add("active");
+    if (btn) btn.textContent = "Voucher Sudah Diklaim 🎉";
+
+    confetti({
+        particleCount: 110,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ["#fae0a8", "#e57ba0", "#ffffff", "#25D366"]
+    });
+}
+
+function closeExhibitModal() {
+    const modal = document.getElementById("exhibitModal");
+    modal.querySelectorAll("video").forEach(v => v.pause());
+    modal.classList.remove("open");
+    isModalOpen = false;
+
+    // Munculkan pop-up selamat tepat setelah modal karya ke-13 ditutup
+    if (isVoucherUnlocked && !hasShownCongrats) {
+        hasShownCongrats = true;
+        setTimeout(() => {
+            showCongratsPopup();
+        }, 250);
+    }
+}
+
+document.getElementById("exhibitModal").addEventListener("click", (e) => {
+    if (e.target.id === "exhibitModal") {
+        closeExhibitModal();
+    }
+});
+
+function blowMuseumCandle() {
+    if (candleBlown) return;
+    candleBlown = true;
+
+    const flame = document.getElementById("modalFlame");
+    const btn = document.getElementById("modalBlowBtn");
+    const msg = document.getElementById("modalCandleMsg");
+
+    if (flame) flame.classList.add("out");
+    if (btn) btn.textContent = "Lilin Sudah Ditiup 🎉";
+    if (msg) msg.style.display = "block";
+
+    confetti({
+        particleCount: 100,
+        spread: 75,
+        origin: { y: 0.55 },
+        colors: ["#fae0a8", "#e57ba0", "#ffffff", "#dfb468"]
+    });
+}
+
+function sendFountainWish() {
+    const input = document.getElementById("fountainWishInput");
+    const msg = document.getElementById("fountainWishMsg");
+    if (input && input.value.trim() !== "") {
+        input.value = "";
+        if (msg) msg.style.display = "block";
+        confetti({
+            particleCount: 70,
+            spread: 65,
+            origin: { y: 0.65 },
+            colors: ["#fae0a8", "#e57ba0", "#ffffff"]
+        });
+    }
+}
+
+// 5. HITUNG HARI BERSAMA SEJAK 16 AGUSTUS 2026
+const startDate = new Date(2026, 7, 16);
+const today = new Date();
+const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+const ticketCounter = document.getElementById("ticketDayCounter");
+
+if (diffDays >= 0) {
+    ticketCounter.textContent = `⏳ ${diffDays} Hari Bersama Sejak 16 Agustus 2026`;
+} else {
+    ticketCounter.textContent = "💖 Special Exhibition • 16 Agustus 2026";
+}
+</script>
+</body>
+</html>
